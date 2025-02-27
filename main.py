@@ -13,6 +13,7 @@ from models.yolo import YOLOSegmenter
 from models.persam import PerSAMSegmenter
 from models.seggpt import SegGPTSegmenter
 from models.random_forest import RFSegmenter
+from models.unet import UNetSegmenter
 
 def main(args):
     # Set device
@@ -175,6 +176,7 @@ segment_call = {
     'SegGPT' : SegGPTSegmenter,
     'RandomForest' : RFSegmenter,
     'YOLO' : YOLOSegmenter,
+    'unet': UNetSegmenter
     }
 
 
@@ -188,7 +190,7 @@ if __name__ == '__main__':
     parser.add_argument('--timeseries', default=None, help='Add path to folder to predict on data without ground truth annotations. Bypasses visualization and metric computation.')
 
     # Experiment settings
-    parser.add_argument('--model', default='SegGPT', choices=segment_call.keys(), help='Dictates which model to use, choices are "PerSAM", "SegGPT", "RandomForest" and "YOLO"')
+    parser.add_argument('--model', default='SegGPT', choices=segment_call.keys(), help='Dictates which model to use, choices are "PerSAM", "SegGPT", "RandomForest", "YOLO", and "UNet')
     parser.add_argument('--location', default='1', choices=['1', '2', '3', '4', '5', '6'], type=str, help='Which location to use, number between 1 and 6 as a string')
     parser.add_argument('--remove_posthoc', action='store_true', default=True, help='Enable flag to remove irrelevant masks after prediction. These are masks that are outside of the area of interest (the river).')
     parser.add_argument('--prompt_imgs', default=[0], help='Which image(s) to use as prompts')
@@ -205,6 +207,11 @@ if __name__ == '__main__':
     # YOLO
     parser.add_argument('--yolo_test_path', default=None, help='Path to folder containing images for testing')
     parser.add_argument('--yolo_model_path', default='./models/yolo_seg_custom.pt', help='Path to pretrained YOLO model')
+    
+    # UNet
+    parser.add_argument('--unet_model_path', default='./models/unet_model.pt', help='Path to pretrained U-Net model weights')
+    parser.add_argument('--unet_input_height', type=int, default=512, help='Input height for U-Net model')
+    parser.add_argument('--unet_input_width', type=int, default=512, help='Input width for U-Net model')
 
     args = parser.parse_args()
     assert not ((args.model == 'YOLO') and (args.yolo_test_path is None))
